@@ -9,3 +9,9 @@ Federated learning is a machine learning paradigm that allows for the training o
 
 ## How does the framework work?
 The framework simulates a federated learning scenario by creating a set of virtual devices, each with its own local dataset. The devices communicate with a central server, exchanging model updates and receiving instructions on how to update their local models. The framework includes various algorithms and models for the devices to use, as well as metrics for evaluating their performance.
+
+## Contributing
+Contributions to the framework are welcome! If you would like to contribute, please fork the repository and submit a pull request.
+
+## License
+This project is licensed under the Apache License 2.0 - see the LICENSE file for details.
