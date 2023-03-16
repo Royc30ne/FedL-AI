@@ -1,6 +1,7 @@
 # FedL-AI
 A Open Source Federated Learning Simulation Framework for Everyone
 
+![image](https://raw.githubusercontent.com/Royc30ne/FedL-AI/main/docs/imgs/FedLAI-logo.png)
 ## Introduction
 This is a simulation framework for federated learning, based on TensorFlow. The framework allows for the simulation of various federated learning scenarios and the evaluation of different algorithms and models under those scenarios.
 
