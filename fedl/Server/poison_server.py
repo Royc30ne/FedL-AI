@@ -1,7 +1,7 @@
 import numpy as np
 
 from base_server import BaseServer
-from aggregator import Aggregator
+from fedl.Server.Aggregator.aggregator import Aggregator
 
 class PoisonServer(BaseServer):
     def __init__(self, client_model, aggregator : Aggregator, poisoner , model_params=None):

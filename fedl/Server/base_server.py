@@ -1,7 +1,7 @@
 import numpy as np
 
 from abc import ABC, abstractmethod
-from aggregator import Aggregator
+from fedl.Server.Aggregator.aggregator import Aggregator
 class BaseServer(ABC):
     def __init__(self, client_model, aggregator : Aggregator, model_params=None):
         self.client_model = client_model
@@ -43,4 +43,8 @@ class BaseServer(ABC):
         return sys_metrics, self.updates
 
     def aggregate(self):
-        return self.aggregator.aggregate()
+        self.model = self.aggregator.aggregate(self.updates)
+        return self.model
+    
+    def __model__(self):
+        return self.model
