@@ -18,12 +18,11 @@ scikit-learn == 1.2.1
 
 ## Reference
 [multi-center-fed-learning](https://github.com/caifederated/multi-center-fed-learning)
-
 [leaf](https://github.com/TalwalkarLab/leaf)
 
 
 ## Acknowledgements
-Datasets used in this project is from [LEAF](https://leaf.cmu.edu/)
+Datasets(in datasets folder) used in this project is from [LEAF](https://leaf.cmu.edu/)
 
 ## Contributing
 Contributions to the framework are welcome! If you would like to contribute, please fork the repository and submit a pull request.
