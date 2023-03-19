@@ -5,5 +5,5 @@ class BaseDefense(ABC):
     def __init__(self, config):
         pass
 
-    def defense(self, x):
+    def defend(self, x):
         return x
