@@ -1,13 +1,12 @@
 import numpy as np
 
 from base_defense import BaseDefense
-from fedl.utils import create_euclidean_dict
+from fedl.utils.norm_distances import create_euclidean_dict
 
 class KrumDefense(BaseDefense):
     # Pass configuration
-    def __init__(self, config):
-        self.config = config
-        self.corrupted_count = config['defense']['krum']['corrupted_count']
+    def __init__(self, corrupted_count):
+        self.corrupted_count = corrupted_count
 
     def defend(self, updates):
         """
