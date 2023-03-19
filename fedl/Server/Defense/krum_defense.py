@@ -1,7 +1,7 @@
 import numpy as np
 
 from base_defense import BaseDefense
-from ..utils import create_euclidean_dict
+from fedl.utils import create_euclidean_dict
 
 class KrumDefense(BaseDefense):
     # Pass configuration
