@@ -1,6 +1,6 @@
-from abc import ABC, abstractmethod
+from fedl.Server.Aggregator.aggregator import Aggregator
 
-class BaseDefense(ABC):
+class BaseDefense(Aggregator):
     @abstractmethod
     def __init__(self):
         pass

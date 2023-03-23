@@ -8,6 +8,9 @@ class KrumDefense(BaseDefense):
     def __init__(self, corrupted_count):
         self.corrupted_count = corrupted_count
 
+    def aggregate(self, updates):
+        return self.defend(updates)
+
     def defend(self, updates):
         """
         Krum defense
@@ -15,7 +18,7 @@ class KrumDefense(BaseDefense):
         :return: the defense update
         """
         return self.krum_main(updates)
-
+    
     def krum_main(self, updates, users_weights=None, user_count=None, distances=None, return_index=False):
         if users_weights is None:
             clients_weights = [u[1] for u in updates]
@@ -33,7 +36,7 @@ class KrumDefense(BaseDefense):
         non_malicious_count = client_count - self.corrupted_count
         
         if distances is None:
-            scores = self._krum_scores(clients_weights, non_malicious_count)
+            scores = _krum_scores(clients_weights, non_malicious_count)
         else:
             scores = [sum(sorted(distances[user].values())[:non_malicious_count]) for user in distances.keys()]
                 
@@ -44,7 +47,7 @@ class KrumDefense(BaseDefense):
         else:
             return clients_weights[minimal_error_index] # return the weights of the client with the minimal error
     
-    def _krum_scores(self, weight_list, non_malicious_count):
-        distances = create_euclidean_dict(weight_list)
-        scores = [sum(sorted(distances[user].values())[:non_malicious_count]) for user in distances.keys()]
-        return scores
+def _krum_scores(weight_list, non_malicious_count):
+    distances = create_euclidean_dict(weight_list)
+    scores = [sum(sorted(distances[user].values())[:non_malicious_count]) for user in distances.keys()]
+    return scores

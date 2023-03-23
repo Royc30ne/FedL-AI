@@ -4,17 +4,14 @@ import os
 import pandas as pd
 import tensorflow as tf
 import tensorflow.compat.v1 as tf
-import metrics.writer as metrics_writer
+import fedl.utils.metrics_utils as metrics_utils
 
 from fedl.Server.Aggregator.aggregator import Aggregator
 from baseline_constants import MAIN_PARAMS, MODEL_PARAMS
-from client import Client
+from fedl.Client.base_client import Client
+from fedl.Client.client_model.base_client_model import BaseClientModel
 from ..Server.base_server import BaseServer, MDLpoisonServer, MDLpoisonServerNew
-from model import ServerModel
-from utils.constants import DATASETS
 from sklearn.cluster import KMeans
-from mlhead_utilfuncs import save_historyfile, save_expr_file
-
 STAT_METRICS_PATH = 'metrics/stat_metrics.csv'
 SYS_METRICS_PATH = 'metrics/sys_metrics.csv'
 
@@ -38,9 +35,9 @@ def save_model(server_model, dataset, model):
     save_path = server_model.save(os.path.join(ckpt_path, '%s.ckpt' % model))
     print('Model saved in path: %s' % save_path)
 
-def print_custom_metrics(metrics, weights):
+def print_metrics(metrics, weights):
     ordered_weights = [weights[c] for c in sorted(weights)]
-    metric_names = metrics_writer.get_metrics_names(metrics)
+    metric_names = metrics_utils.get_metrics_names(metrics)
 
     for metric in metric_names:
         ordered_metric = [metrics[c][metric] for c in sorted(metrics)]
@@ -65,25 +62,12 @@ class Base_Tainer:
         self.test_data = test_data
         self.log_path = log_path
         self.server = None
+        self.clients = []
 
-    def model_config(self, model_path, lr, seed, clients_per_round, poison, poison_rate, aggregator:Aggregator):
-        if not os.path.exists(model_path):
-            print('Please specify a valid dataset and a valid model.')
-
-        print('############################## %s ##############################' % model_path)
-        mod = importlib.import_module(model_path)
-        ClientModel = getattr(mod, 'ClientModel')
-        # Suppress tf warnings
-        tf.logging.set_verbosity(tf.logging.WARN)
-
-        # Create 2 models
-        model_params = MODEL_PARAMS[model_path]
-        model_params_list = list(model_params)
-        model_params_list.insert(0, seed)
-        model_params_list[1] = lr
-        model_params = tuple(model_params_list)
+    def model_config(self, client_model: BaseClientModel, clients_per_round, poison, poison_rate, aggregator:Aggregator):
+        print('############################################################')
         tf.reset_default_graph()
-        client_model = ClientModel(*model_params)
+        client_model = client_model
 
         # Create clients
         _users = self.users
@@ -95,10 +79,10 @@ class Base_Tainer:
         # Create server
         if poison == True:
             num_workers = int(poison_rate * clients_per_round)
-            server = MDLpoisonServerNew(client_model, clients, num_workers, model_params_list[2], clients_per_round)
+            self.server = MDLpoisonServerNew(client_model, clients, num_workers, model_params_list[2], clients_per_round)
         else:
-            server = BaseServer(client_model, aggregator=aggregator)
-        return clients, server, client_model
+            self.server = BaseServer(client_model, aggregator=aggregator)
+        return clients, self.server, client_model
 
     def begins(self, config, args):
         clients, self.server, client_model = self.model_config(config, args.dataset, 'cnn',)
@@ -129,7 +113,7 @@ class Base_Tainer:
             # Test model on all clients
             if (i + 1) % eval_every == 0 or (i + 1) == num_rounds:
                 stat_metrics = self.server.test_model(clients)
-                loss, micro_acc, macro_acc = print_custom_metrics(stat_metrics, all_num_samples)
+                loss, micro_acc, macro_acc = print_metrics(stat_metrics, all_num_samples)
                 if self.log_path is not None:
                     log_history(i + 1, loss, micro_acc, macro_acc, c_ids, self.log_path)
 

@@ -22,6 +22,9 @@ class TrimmedMeanDefense(BaseDefense):
     def __init__(self, corrupted_count):
         self.corrupted_count = corrupted_count
 
+    def aggregate(self, updates):
+        return self.defend(updates)
+    
     def defend(self, updates):
         """
         Krum defense
