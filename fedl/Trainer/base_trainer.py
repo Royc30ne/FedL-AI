@@ -8,7 +8,7 @@ import fedl.utils.metrics_utils as metrics_utils
 
 from fedl.Server.Aggregator.aggregator import Aggregator
 from baseline_constants import MAIN_PARAMS, MODEL_PARAMS
-from fedl.Client.base_client import Client
+from fedl.Client.client_container import Client
 from fedl.Client.client_model.base_client_model import BaseClientModel
 from ..Server.base_server import BaseServer, MDLpoisonServer, MDLpoisonServerNew
 from sklearn.cluster import KMeans
