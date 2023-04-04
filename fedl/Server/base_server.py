@@ -2,8 +2,9 @@ import numpy as np
 
 from abc import ABC, abstractmethod
 from fedl.Server.Aggregator.aggregator import Aggregator
+from fedl.utils.model_constants import BYTES_WRITTEN_KEY, BYTES_READ_KEY, LOCAL_COMPUTATIONS_KEY
 class BaseServer(ABC):
-    def __init__(self, client_model, aggregator : Aggregator, model_params=None):
+    def __init__(self, client_model, aggregator:Aggregator, model_params=None):
         self.client_model = client_model
         self.aggregator = aggregator
         if model_params is not None:

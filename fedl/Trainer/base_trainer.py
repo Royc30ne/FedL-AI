@@ -50,36 +50,16 @@ def print_metrics(metrics, weights):
     final_macro = np.average(macro, weights=ordered_weights)
     return final_loss, final_micro, final_macro
 
-class Base_Tainer:
-    def __init__(self, users, groups, train_data, test_data, num_class, log_path=None):
-        self.users = users
-        self.train_data = train_data
-        self.test_data = test_data
+class BaseTrainer:
+    def __init__(self, clients, num_class, server, log_path=None):
+        tf.reset_default_graph()
+        self.clients = clients
+        print('%d Clients in Total' % len(self.clients))
         self.num_class = num_class
         self.log_path = log_path
-        self.server = None
+        self.server = server
         self.clients = []
         self.client_model = None
-
-    def model_config(self, client_model: BaseClientModel, clients_per_round, poison, poison_rate, aggregator:Aggregator):
-        print('############################################################')
-        tf.reset_default_graph()
-        self.client_model = client_model
-
-        # Create clients
-        _users = self.users
-        groups = [[] for _ in _users]
-        self.clients = [Client(u, g, self.train_data[u], self.test_data[u], client_model) \
-                   for u, g in zip(_users, groups)]
-        print('%d Clients in Total' % len(self.clients))
-
-        # Create server
-        # if poison == True:
-        #     num_workers = int(poison_rate * clients_per_round)
-        #     self.server = MDLpoisonServerNew(client_model, self.clients, num_workers, self.num_class, clients_per_round)
-        # else:
-        self.server = BaseServer(client_model, aggregator=aggregator)
-        return self.clients, self.server, self.client_model
 
     def begins(self, num_rounds, eval_every, epochs_per_round, batch_size, clients_per_round):
 
