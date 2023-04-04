@@ -15,11 +15,6 @@ from sklearn.cluster import KMeans
 STAT_METRICS_PATH = 'metrics/stat_metrics.csv'
 SYS_METRICS_PATH = 'metrics/sys_metrics.csv'
 
-krum_rounds = []
-his_acc = []
-his_loss = []
-his_mcoacc = []
-his_assignment =[]
 
 def online(clients):
     """We assume all users are always online."""
@@ -56,53 +51,48 @@ def print_metrics(metrics, weights):
     return final_loss, final_micro, final_macro
 
 class Base_Tainer:
-    def __init__(self, users, groups, train_data, test_data, log_path=None):
+    def __init__(self, users, groups, train_data, test_data, num_class, log_path=None):
         self.users = users
         self.train_data = train_data
         self.test_data = test_data
+        self.num_class = num_class
         self.log_path = log_path
         self.server = None
         self.clients = []
+        self.client_model = None
 
     def model_config(self, client_model: BaseClientModel, clients_per_round, poison, poison_rate, aggregator:Aggregator):
         print('############################################################')
         tf.reset_default_graph()
-        client_model = client_model
+        self.client_model = client_model
 
         # Create clients
         _users = self.users
         groups = [[] for _ in _users]
-        clients = [Client(u, g, self.train_data[u], self.test_data[u], client_model) \
+        self.clients = [Client(u, g, self.train_data[u], self.test_data[u], client_model) \
                    for u, g in zip(_users, groups)]
-        print('%d Clients in Total' % len(clients))
+        print('%d Clients in Total' % len(self.clients))
 
         # Create server
-        if poison == True:
-            num_workers = int(poison_rate * clients_per_round)
-            self.server = MDLpoisonServerNew(client_model, clients, num_workers, model_params_list[2], clients_per_round)
-        else:
-            self.server = BaseServer(client_model, aggregator=aggregator)
-        return clients, self.server, client_model
+        # if poison == True:
+        #     num_workers = int(poison_rate * clients_per_round)
+        #     self.server = MDLpoisonServerNew(client_model, self.clients, num_workers, self.num_class, clients_per_round)
+        # else:
+        self.server = BaseServer(client_model, aggregator=aggregator)
+        return self.clients, self.server, self.client_model
 
-    def begins(self, config, args):
-        clients, self.server, client_model = self.model_config(config, args.dataset, 'cnn',)
-
-        num_rounds = config["num-rounds"]
-        eval_every = config["eval-every"]
-        epochs_per_round = config['epochs']
-        batch_size = config['batch-size']
-        clients_per_round = config["clients-per-round"]
+    def begins(self, num_rounds, eval_every, epochs_per_round, batch_size, clients_per_round):
 
         # Test untrained model on all clients
-        stat_metrics = self.server.test_model(clients)
-        all_ids, all_groups, all_num_samples = self.server.get_clients_info(clients)
+        stat_metrics = self.server.test_model(self.clients)
+        all_ids, all_groups, all_num_samples = self.server.get_clients_info(self.clients)
 
         # Simulate training
         micro_acc = 0.
         for i in range(num_rounds):
             print('--- Round %d of %d: Training %d Clients ---' % (i + 1, num_rounds, clients_per_round))
 
-            self.server.select_clients(online(clients), num_clients=clients_per_round)
+            self.server.select_clients(online(self.clients), num_clients=clients_per_round)
             c_ids, c_groups, c_num_samples = self.server.get_clients_info(None)
 
             sys_metics = self.server.client_train(single_center=None, num_epochs=epochs_per_round, batch_size=batch_size,
@@ -112,16 +102,16 @@ class Base_Tainer:
 
             # Test model on all clients
             if (i + 1) % eval_every == 0 or (i + 1) == num_rounds:
-                stat_metrics = self.server.test_model(clients)
+                stat_metrics = self.server.test_model(self.clients)
                 loss, micro_acc, macro_acc = print_metrics(stat_metrics, all_num_samples)
                 if self.log_path is not None:
                     log_history(i + 1, loss, micro_acc, macro_acc, c_ids, self.log_path)
 
-        client_model.close()
+        self.client_model.close()
         return micro_acc
 
     def ends(self, save_model=False):
-        print("-" * 3, "End of Krum exerpiment.", "-" * 3)
+        print("-" * 3, "End of exerpiment.", "-" * 3)
         if save_model:
             print("Saving model...")
             save_model(self.server.__model__)
