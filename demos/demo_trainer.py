@@ -11,6 +11,7 @@ test_data_path = 'data/20news/test'
 client_ids, group_ids, train_data, test_data = load_data(train_data_path, test_data_path)
 
 # Create clients
+# Parameters: seed, lr, num_classes
 seed = 123
 lr = 0.01
 num_classes = 20
@@ -21,9 +22,10 @@ clients = [Client(c_id, g_id, train_data[c_id], test_data[c_id], client_model) f
 
 # Create Server
 aggregator = FedAvgAggregator()
+# Parameters: client_model, aggregator, clients_per_round, (optional: model_params)
 server = BaseServer(client_model, aggregator)
 
 # Load Trainer
 rounds = 100
 trainer = BaseTrainer(server, clients, num_classes, rounds)
-trainer.train()
+trainer.begins()
