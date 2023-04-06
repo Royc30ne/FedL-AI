@@ -45,5 +45,3 @@ def read_data(train_data_dir, test_data_dir):
     assert train_groups == test_groups
 
     return train_clients, train_groups, train_data, test_data
-
-
