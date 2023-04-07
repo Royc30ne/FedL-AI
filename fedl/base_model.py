@@ -8,11 +8,9 @@ import tensorflow as tf
 import tensorflow.compat.v1 as tf
 tf.disable_v2_behavior()
 
-from baseline_constants import ACCURACY_KEY, KERNAL_WIDTH, KERNEL_HEIGHT, NUM_INPUT_CHANNEL, NUM_OUTPUT_CHANNEL
-
-from utils.model_utils import batch_data
-from utils.tf_utils import graph_size
-
+from fedl.utils.baseline_constants import ACCURACY_KEY, KERNAL_WIDTH, KERNEL_HEIGHT, NUM_INPUT_CHANNEL, NUM_OUTPUT_CHANNEL
+from fedl.utils.model_utils import batch_data
+from fedl.utils.tf_utils import graph_size
 from sklearn.metrics import precision_score, recall_score, f1_score
 
 class BaseModel(ABC):

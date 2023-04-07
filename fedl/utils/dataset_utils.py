@@ -1,5 +1,6 @@
 import os
 import json
+import numpy as np
 
 from collections import defaultdict
 
@@ -45,3 +46,12 @@ def read_data(train_data_dir, test_data_dir):
     assert train_groups == test_groups
 
     return train_clients, train_groups, train_data, test_data
+
+def load_ez_dataset(path):
+    load_array = np.load(path, allow_pickle=True)
+    users = load_array['users']
+    groups = load_array['groups']
+    train_data = load_array['train_data']
+    test_data = load_array['test_data']
+
+    return users, groups, train_data, test_data
