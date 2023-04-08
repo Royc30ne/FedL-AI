@@ -55,3 +55,7 @@ def load_ez_dataset(path):
     test_data = load_array['test_data']
 
     return users, groups, train_data, test_data
+
+def load_dict_from_npz(path):
+    load_dict = np.load(path, allow_pickle=True).item()
+    return load_dict

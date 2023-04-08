@@ -7,10 +7,9 @@ import tensorflow.compat.v1 as tf
 import fedl.utils.metrics_utils as metrics_utils
 
 from fedl.Server.Aggregator.aggregator import Aggregator
-from baseline_constants import MAIN_PARAMS, MODEL_PARAMS
+from fedl.utils.baseline_constants import MAIN_PARAMS, MODEL_PARAMS
 from fedl.Client.client_container import Client
 from fedl.Client.client_model.base_client_model import BaseClientModel
-from ..Server.base_server import BaseServer, MDLpoisonServer, MDLpoisonServerNew
 from sklearn.cluster import KMeans
 STAT_METRICS_PATH = 'metrics/stat_metrics.csv'
 SYS_METRICS_PATH = 'metrics/sys_metrics.csv'
@@ -58,7 +57,6 @@ class BaseTrainer:
         self.num_class = num_class
         self.log_path = log_path
         self.server = server
-        self.clients = []
         self.client_model = None
 
     def begins(self, num_rounds, eval_every, epochs_per_round, batch_size, clients_per_round):
