@@ -1,7 +1,6 @@
 import random
 import warnings
 
-
 class Client:
     
     def __init__(self, client_id, group=None, train_data={'x' : [],'y' : []}, eval_data={'x' : [],'y' : []}, model=None):
@@ -11,7 +10,7 @@ class Client:
         self.train_data = train_data
         self.eval_data = eval_data
 
-    def train(self, num_epochs=1, batch_size=10, minibatch=None):
+    def train(self, num_epochs=1, batch_size=10, minibatch=None, apply_prox=False):
         """Trains on self.model using the client's train_data.
 
         Args:
@@ -25,6 +24,10 @@ class Client:
             update: set of weights
             update_size: number of bytes in update
         """
+        if apply_prox == True:
+            # assumption: when we are running fedprox algorithm,
+            # the model will have a method fix_global_ws
+            self.model.fix_global_ws(self.model.get_params())
 
         if minibatch is None:
             data = self.train_data

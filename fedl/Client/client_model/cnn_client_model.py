@@ -2,7 +2,7 @@ import tensorflow as tf
 import tensorflow.compat.v1 as tf
 tf.disable_v2_behavior()
 
-from base_client_model import BaseClientModel
+from fedl.Client.client_model.base_client_model import BaseClientModel
 import numpy as np
 
 
@@ -35,10 +35,10 @@ def get_convolution_extractor_shape(filter_list):
 # some layers frozen
 # def get_retrain_graph():
 
-class ClientModel(BaseClientModel):
+class CNNClientModel(BaseClientModel):
     def __init__(self, seed, lr, num_classes, optimizer=None):
         self.num_classes = num_classes
-        super(ClientModel, self).__init__(seed, lr)
+        super(CNNClientModel, self).__init__(seed, lr, num_classes)
 
     def create_model(self):
         """Model function for CNN."""
